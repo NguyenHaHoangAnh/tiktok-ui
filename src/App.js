@@ -23,7 +23,8 @@ function App() {
                 element={
                   <Layout>
                     <Page />
-                  </Layout>}
+                  </Layout>
+                }
               />
             );
           })}
