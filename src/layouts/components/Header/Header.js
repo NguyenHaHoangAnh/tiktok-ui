@@ -137,7 +137,6 @@ function Header() {
                                 <FontAwesomeIcon icon={faEllipsisVertical} />
                             </button>
                         )}
-                        
                     </Menu>
                 </div>              
             </div>

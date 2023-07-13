@@ -16,10 +16,11 @@ const cx = classNames.bind(styles);
 function Search() {
     const [searchValue, setSearchValue] = useState('');
     const [searchResult, setSearchResult] = useState([]);
-    const [showResult, setShowResult] = useState(true);
+    const [showResult, setShowResult] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const debounced = useDebounce(searchValue, 500);
+    // delay when input 500ms
+    const debouncedValue = useDebounce(searchValue, 500);
 
     const inputRef = useRef();
 
@@ -32,14 +33,14 @@ function Search() {
         const fetchApi = async () => {
             setLoading(true);
 
-            const result = await searchService.search(debounced);
+            const result = await searchService.search(debouncedValue);
             setSearchResult(result);
 
             setLoading(false);
         }
 
         fetchApi();
-    }, [debounced]);
+    }, [debouncedValue]);
 
     const handleClear = () => {
         setSearchValue('');
