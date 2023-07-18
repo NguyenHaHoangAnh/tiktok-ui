@@ -7,21 +7,22 @@ import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Wrapper as PopperWrapper } from '../../../components/Popper';
 import AccountPreview from './AccountPreview';
 import styles from './SuggestedAccounts.module.scss';
+import Image from '../../../components/Image';
 
 const cx = classNames.bind(styles);
 
-function AccountItem() {
+function AccountItem({ data }) {
     const renderPreview = (props) => {
         return (
             <div tabIndex='-1' {...props}>
                 <PopperWrapper>
                     <div className={cx('preview')}>
-                        <AccountPreview />
+                        <AccountPreview data={data} />
                     </div>
                 </PopperWrapper>
             </div>
         );
-    }
+    };
 
     return (
         <div>
@@ -29,21 +30,23 @@ function AccountItem() {
                 interactive
                 delay={[800, 0]}
                 offset={[-20 ,0]}
+                zIndex={2}
+                popperOptions={{ modifiers: [{ name: 'flip', enabled: false }] }}
                 placement='bottom'
                 render={renderPreview}
             >
                 <div className={cx('account-item')}>
-                    <img 
+                    <Image 
                         className={cx('avatar')}
-                        src='https://p16-sign-sg.tiktokcdn.com/aweme/100x100/tos-alisg-avt-0068/856d6e040a2b3181553f302cdef7f5f5.jpeg?x-expires=1689152400&x-signature=7blOD9gqeQPNg%2BypofyKID%2BTc%2FY%3D' 
-                        alt=''
+                        src={data.avatar}
+                        alt={data.nickname}
                     />
                     <div className={cx('user-info')}>
                         <h4 className={cx('nickname')}>
-                            <strong>roses_are_rosie</strong>
-                            <FontAwesomeIcon className={cx('check')} icon={faCheckCircle} />
+                            <strong>{data.nickname}</strong>
+                            {data.tick && <FontAwesomeIcon className={cx('check')} icon={faCheckCircle} />}
                         </h4>
-                        <p className={cx('name')}>ROSE</p>
+                        <p className={cx('name')}>{`${data.first_name} ${data.last_name}`}</p>
                     </div>
                 </div>
             </Tippy>
@@ -52,7 +55,7 @@ function AccountItem() {
 }
 
 AccountItem.propTypes = {
-
+    data: PropTypes.object.isRequired,
 }
 
 export default AccountItem;

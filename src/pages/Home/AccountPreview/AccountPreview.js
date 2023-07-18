@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 
 import styles from './AccountPreview.module.scss';
-import Button from '../../../../components/Button';
-import Image from "../../../../components/Image";
+import Button from '../../../components/Button';
+import Image from "../../../components/Image";
 
 const cx = classNames.bind(styles);
 
@@ -27,6 +27,7 @@ function AccountPreview({ data }) {
                     {data.tick && <FontAwesomeIcon className={cx('check')} icon={faCheckCircle} />}
                 </h4>
                 <p className={cx('name')}>{`${data.first_name} ${data.last_name}`}</p>
+
                 <p className={cx('analytics')}>
                     <strong className={cx('value')}>{data.followers_count} </strong>
                     <span className={cx('label')}>Followers</span>
@@ -34,6 +35,8 @@ function AccountPreview({ data }) {
                     <strong className={cx('value')}>{data.likes_count} </strong>
                     <span className={cx('label')}>Likes</span>
                 </p>
+
+                <p className={cx('bio')}>{data.bio || 'No bio'}</p>
             </div>
         </div>
     );
