@@ -29,7 +29,7 @@ import {
     PinterestIcon,
 } from '../../../components/Icons';
 import VideoAction from './VideoAction';
-import Menu from '../../../components/Popper/Menu';
+import Menu from './Menu';
 
 const cx = classNames.bind(styles);
 
@@ -37,59 +37,72 @@ const SMALL_MENU_ITEMS = [
     {
         icon: <EmbedIcon />,
         title: 'Embed',
+        href: '/',
     },
     {
         icon: <SendIcon />,
         title: 'Send to friends',
+        href: '/',
     },
     {
         icon: <FacebookIcon />,
         title: 'Share to Facebook',
+        href: '/',
     },
     {
         icon: <WhatsAppIcon />,
         title: 'Share to WhatsApp',
+        href: '/',
     },
     {
         icon: <LinkIcon />,
         title: 'CopyLink',
+        href: '/',
     },
 ]
 
 const MENU_ITEMS = [
     ...SMALL_MENU_ITEMS,
     {
-        icon: <ArrowDownIcon className={cx('arrow-down-btn')} />,
+        icon: <ArrowDownIcon />,
+        className: 'only-icon',
         children: {
             data: [
                 ...SMALL_MENU_ITEMS,
                 {
                     icon: <TwitterIcon />,
                     title: 'Share to Twitter',
+                    href: '/',
                 },
                 {
                     icon: <LinkedInIcon />,
                     title: 'Share to LinkedIn',
+                    href: '/',
                 },
                 {
                     icon: <RedditIcon />,
                     title: 'Share to Reddit',
+                    href: '/',
                 },
                 {
                     icon: <TelegramIcon />,
                     title: 'Share to Telegram',
+                    href: '/',
                 },
                 {
                     icon: <EmailIcon />,
                     title: 'Share to Email',
+                    href: '/',
                 },
                 {
                     icon: <LineIcon />,
                     title: 'Share to Line',
+                    href: '/',
                 },
                 {
                     icon: <PinterestIcon />,
                     title: 'Share to Pinterest',
+                    href: '/',
                 },
             ]
         }
@@ -177,16 +190,13 @@ function Video({ data }) {
                         <VideoAction className={cx('action-btn', 'like-btn')} icon={<LikeIcon />} data={data.likes_count} />
                         <VideoAction className={cx('action-btn')} icon={<CommentIcon />} data={data.comments_count} />
                         <VideoAction className={cx('action-btn', 'collect-btn')} icon={<CollectIcon />} data={data.views_count} />
-                        <div className={cx('menu')}>
-                            <Menu
-                                className={cx('menu-list')}
-                                items={MENU_ITEMS}
-                                placement='top-start'
-                                onChange={handleChange}
-                            >
-                                <VideoAction className={cx('action-btn')} icon={<ShareIcon />} data={data.shares_count} />
-                            </Menu>
-                        </div>
+                        <Menu
+                            className={cx('menu-list')}
+                            items={MENU_ITEMS}
+                            onChange={handleChange}
+                        >
+                            <VideoAction className={cx('action-btn')} icon={<ShareIcon />} data={data.shares_count} />
+                        </Menu>
                     </div>
                 </div>
             </div>

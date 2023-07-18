@@ -22,4 +22,4 @@ Header.propTypes = {
     onBack: PropTypes.func.isRequired,
 }
 
-export default Header
+export default Header;

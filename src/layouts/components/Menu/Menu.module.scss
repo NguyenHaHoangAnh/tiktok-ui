@@ -1,6 +1,6 @@
 // Menu wrapper
 .menu-list {
-    width: 100%;
+    width: 224px;
 
     .menu-item {
         margin-left: 0;
@@ -8,6 +8,7 @@
 }
 
 .menu-popper {
+    max-height: min((100vh - 96px) - 60px, 734px);
     padding-bottom: 8px;
 }
 
