@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import Image from '../../../components/Image';
 import classNames from 'classnames/bind';
-import styles from '../Home.module.scss';
+import styles from './Video.module.scss';
 import Button from '../../../components/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
@@ -191,7 +191,6 @@ function Video({ data }) {
                         <VideoAction className={cx('action-btn')} icon={<CommentIcon />} data={data.comments_count} />
                         <VideoAction className={cx('action-btn', 'collect-btn')} icon={<CollectIcon />} data={data.views_count} />
                         <Menu
-                            className={cx('menu-list')}
                             items={MENU_ITEMS}
                             onChange={handleChange}
                         >

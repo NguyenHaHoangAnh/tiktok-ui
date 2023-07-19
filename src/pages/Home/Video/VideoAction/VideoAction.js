@@ -1,7 +1,7 @@
 import { forwardRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
-import styles from '../../Home.module.scss';
+import styles from '../Video.module.scss';
 
 const cx = classNames.bind(styles);
 
@@ -21,7 +21,9 @@ const VideoAction = forwardRef(({ className, icon, data }, ref) => {
             })} 
             icon={icon} onClick={handleLike}
         >
-            <span className={cx('icon-wrapper')}>{icon}</span>
+            <span className={cx('icon-wrapper')}>
+                <span className={cx('icon')}>{icon}</span>
+            </span>
             <strong className={cx('action-number')}>{data}</strong>
         </button>
     );
