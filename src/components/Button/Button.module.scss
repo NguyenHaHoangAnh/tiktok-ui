@@ -10,7 +10,6 @@
     font-family: var(--font-family);
     cursor: pointer;
     background-color: var(--white);
-    border: 1px solid transparent;
     user-select: none;
 
     + .wrapper {
@@ -38,7 +37,7 @@
 .rounded {
     border-radius: 999px;
     box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
-    border-color: rgba(22, 24, 35, 0.12);
+    border: 1px solid rgba(22, 24, 35, 0.12) !important;
 
     &:hover {
         border-color: rgba(22, 24, 35, 0.2);
@@ -49,7 +48,6 @@
 .primary {
     color: var(--white);
     background-color: var(--primary);
-    border-color: var(--primary);
 
     &:hover {
         border-color: var(--primary);
@@ -59,7 +57,7 @@
 
 .outline {
     color: var(--primary);
-    border-color: currentColor;
+    border: 1px solid currentColor !important;
 
     &:hover {
         border-color: currentColor;

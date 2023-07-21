@@ -95,12 +95,17 @@
     cursor: pointer;
 }
 
-.like-btn {
-    &.active .icon-wrapper {
-        color: var(--primary);
-    }
+.icon {
+    // display: flex;
+    // justify-content: center;
+    // align-items: center;
+    width: 24px;
+    height: 24px;
+}
 
-    &.active .icon {
+.like-btn {
+    &.active svg {
+        color: var(--primary);
         animation: glowUp 0.8s ease-out;
     }
 }
@@ -113,20 +118,17 @@
 }
 
 .collect-btn {
-    &.active .icon-wrapper {
+    &.active svg {
         color: #face15;
-    }
-
-    &.active .icon {
-        animation: glowUp 0.8s ease-out;
+        animation: sizeUp 0.8s ease-out;
     }
 }
 
-// @keyframes sizeUp {
-//     0% { height: 2.4rem; }
-//     50% { height: 1.6rem }
-//     100% { height: 2.4rem;}
-// }
+@keyframes sizeUp {
+    0% { height: 2.4rem; }
+    50% { height: 1.6rem; }
+    100% { height: 2.4rem;}
+}
 
 .icon-wrapper {
     display: flex;

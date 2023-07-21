@@ -14,7 +14,7 @@ const TYPE = 'for-you';
 
 function Home() {
     const [page, setPage] = useState(INIT_PAGE);
-    const [videos, setVideos] = useState([]);
+    const [data, setData] = useState([]);
     const [showGoToTop, setShowGoToTop] = useState(false);
     const [showClass, setShowClass] = useState('');
     const [firstLoadPage, setFirstLoadPage] = useState(true);
@@ -26,7 +26,7 @@ function Home() {
         videoService
             .getVideo({ type: TYPE, page: controller.page })
             .then(data => {
-                isMounted && setVideos(prevVideo => [...prevVideo, ...data]);
+                isMounted && setData(prevVideo => [...prevVideo, ...data]);
             })
             .catch(error => console.log(error));
         
@@ -62,7 +62,7 @@ function Home() {
 
     return ( 
         <div className={cx('wrapper')}>
-            {videos.map(data => (
+            {data.map(data => (
                 <Video data={data} key={data.id} />
             ))}
 

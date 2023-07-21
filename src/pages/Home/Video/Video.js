@@ -182,7 +182,7 @@ function Video({ data }) {
                 </div>
 
                 <div className={cx('body')}>
-                    <video className={cx('video')} controls>
+                    <video className={cx('video')} poster={data.thumb_url} controls>
                         <source src={data.file_url} type={data.meta.mime_type} />
                     </video>
 
