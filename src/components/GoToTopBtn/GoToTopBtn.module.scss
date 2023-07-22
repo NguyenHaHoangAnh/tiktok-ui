@@ -1,0 +1,59 @@
+// Download + Go to top btn
+.bottom-btn {
+    --current-position: -36px;
+
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    bottom: var(--current-position);
+    right: 24px;
+
+    &.show-go-to-top-btn {
+        animation: moveUp 0.5s ease-in-out;
+        bottom: 8px;
+    }
+
+    &.hide-go-to-top-btn {
+        animation: moveDown 0.5s ease-in-out;
+        bottom: var(--current-position);
+    }
+}
+
+@keyframes moveUp {
+    from {
+        bottom: var(--current-position);
+    }
+    to {
+        bottom: 8px;
+    }
+}
+
+@keyframes moveDown {
+    from {
+        bottom: 8px;
+    }
+    to {
+        bottom: var(--current-position);
+    }
+}
+
+// Download btn
+.download-btn {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 3rem;
+    padding: 0 16px;
+    color: rgba(22, 24, 35, .75);
+    cursor: pointer;
+}
+
+// Go to top btn
+.go-to-top-btn {
+    margin-top: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    cursor: pointer;
+}

@@ -18,7 +18,7 @@ import config from '../../../config';
 import Button from '../../../components/Button';
 import styles from './Header.module.scss';
 import images from '../../../assets/images';
-import Menu from '../Menu';
+import Menu from '../../../components/Menu';
 import { InboxIcon, MessageIcon, UploadIcon } from '../../../components/Icons';
 import Image from '../../../components/Image';
 import Search from '../Search';
@@ -155,7 +155,7 @@ function Header() {
             icon: <FontAwesomeIcon icon={faSignOut} />,
             title: 'Log out',
             to: '/logout',
-            separate: true,
+            className: 'separate',
         },
     ]
     
@@ -196,8 +196,12 @@ function Header() {
                     )}
 
                     <Menu 
+                        className={cx('header-menu-list')}
                         items={currentUser ? userMenu : MENU_ITEMS} 
+                        placement='bottom-end'
+                        offset={[12, 8]}
                         onChange={handleMenuChange}
+                        menuPopper={cx('header-menu-popper')}
                     >
                         {currentUser ? (
                             <Image 

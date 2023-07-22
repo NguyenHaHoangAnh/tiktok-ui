@@ -1,22 +1,26 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import classNames from 'classnames/bind';
 import Tippy from '@tippyjs/react/headless';
 
-import {Wrapper as PopperWrapper} from '../../../components/Popper';
+import {Wrapper as PopperWrapper} from '../Popper';
 import MenuItem from './MenuItems';
 import Header from './Header';
 import styles from './Menu.module.scss';
-import { useState } from 'react';
 
 const cx = classNames.bind(styles);
 
 const defaultFn = () => {};
 
 function Menu({ 
+                className,
                 children, 
                 items = [],
+                placement,
+                offset,
                 hideOnClick = false, 
-                onChange = defaultFn }) {
+                onChange = defaultFn,
+                ...otherProp }) {
     const [history, setHistory] = useState([{  data: items }]);
     const current = history[history.length - 1];
 
@@ -44,13 +48,21 @@ function Menu({
     }
 
     const renderResult = (attrs) => (
-        <div className={cx('menu-list')} tabIndex='-1' {...attrs}>
-            <PopperWrapper className={cx('menu-popper')}>
-                {history.length > 1 &&
+        <div 
+            className={cx('menu-list', {
+                [className]: className,
+            })} 
+            tabIndex='-1' {...attrs}
+        >
+            <PopperWrapper className={cx('menu-popper', {
+                [otherProp.menuPopper]: otherProp.menuPopper,
+            })}>
+                {history.length > 1 && !!current.title &&
                     <Header 
                         title={current.title} 
                         onBack={handleBack}
-                />}
+                    />
+                }
                 <div className={cx('menu-body')}>{renderItems()}</div>
             </PopperWrapper>
         </div>
@@ -65,9 +77,8 @@ function Menu({
         <Tippy
             interactive
             zIndex={2}
-            delay={[0, 500]}
-            placement='bottom-end'
-            offset={[12, 8]}
+            placement={placement}
+            offset={offset}
             popperOptions={{ modifiers: [{ name: 'flip', enabled: false }] }}
             hideOnClick={hideOnClick}
             render={renderResult}

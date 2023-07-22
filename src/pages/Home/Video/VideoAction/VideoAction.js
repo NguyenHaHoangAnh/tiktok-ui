@@ -19,7 +19,8 @@ const VideoAction = forwardRef(({ className, icon, data }, ref) => {
                 [className]: className,
                 active: liked,
             })} 
-            icon={icon} onClick={handleLike}
+            icon={icon} 
+            onClick={handleLike}
         >
             <span className={cx('icon-wrapper')}>
                 <span className={cx('icon')}>{icon}</span>

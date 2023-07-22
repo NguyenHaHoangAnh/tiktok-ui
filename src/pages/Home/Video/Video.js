@@ -29,7 +29,7 @@ import {
     PinterestIcon,
 } from '../../../components/Icons';
 import VideoAction from './VideoAction';
-import Menu from './Menu';
+import Menu from '../../../components/Menu';
 
 const cx = classNames.bind(styles);
 
@@ -191,8 +191,12 @@ function Video({ data }) {
                         <VideoAction className={cx('action-btn')} icon={<CommentIcon />} data={data.comments_count} />
                         <VideoAction className={cx('action-btn', 'collect-btn')} icon={<CollectIcon />} data={data.views_count} />
                         <Menu
+                            className={cx('home-menu-list')}
                             items={MENU_ITEMS}
+                            placement='top-start'
+                            offset={[-28, 8]}
                             onChange={handleChange}
+                            menuPopper={cx('share-menu-popper')}
                         >
                             <VideoAction className={cx('action-btn')} icon={<ShareIcon />} data={data.shares_count} />
                         </Menu>
