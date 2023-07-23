@@ -1,10 +1,9 @@
 // Responsive
 .grid {
-    // width: 820px;
-    max-width: 820px;
+    width: 768px;
+    max-width: 100%;
     overflow: hidden;
-    // margin: 0 auto;
-    // margin-left: 52px;
+    margin: 0 auto;
 }
 
 .grid__row {
@@ -47,6 +46,7 @@
     width: 116px;
     height: 116px;
     border-radius: 50%;
+    cursor: pointer;
 }
 
 .info {
@@ -59,6 +59,7 @@
     font-size: 3.2rem;
     line-height: 3.8rem;
     margin-bottom: 4px;
+    cursor: pointer;
 }
 
 .tick {
@@ -72,10 +73,40 @@
     font-size: 1.8rem;
     font-weight: 600;
     margin-bottom: 20px;
+    cursor: pointer;
 }
 
 .follow-btn {
-    
+    padding: 9px 72px;
+}
+
+.message-btn-wrapper {
+    display: flex;
+}
+
+.message-btn {
+    padding: 9px 44px;
+}
+
+.unfollow-btn {
+    margin-left: 8px;
+    width: 37px;
+    height: 37px;
+
+    border: 1px solid rgba(22, 24, 35, 0.12);
+    border-radius: 4px;
+    background-color: transparent;
+
+    &:hover {
+        border-color: rgba(22, 24, 35, 0.2);
+        background-color: rgba(22, 24, 35, 0.03);
+    }
+}
+
+.unfollow-icon {
+    width: 20px;
+    height: 20px;
+    padding: 0;
 }
 
 .count-info-wrapper {
@@ -223,12 +254,15 @@
 .video-feed-tab-line {
     position: absolute;
     top: calc(100% - 0.5px);
-    // left: 0;
     content: '';
     display: block;
     width: 122px;
     height: 2px;
     background-color: var(--text-color);
+}
+
+.video-container {
+
 }
 
 .video-list {
@@ -241,6 +275,41 @@
 }
 
 .video-item {
-    height: 76%;
+    position: relative;
+    height: 226px;
+    cursor: pointer;
+
+    &:hover .video-thumb{
+        display: none;
+    }
+
+    &:hover .video {
+        display: flex;
+    }
+}
+
+.video,
+.video-thumb {
+    position: absolute;
+    width: 100%;
+    height: 200px;
+    border-radius: 4px;
     object-fit: cover;
+}
+
+.video {
+    display: none;
+}
+
+.video-description {
+    position: absolute;
+    bottom: 0;
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 2.2rem;
+    height: 22px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
 }

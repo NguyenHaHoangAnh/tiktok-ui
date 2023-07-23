@@ -8,7 +8,8 @@ import {
     faEllipsis, 
     faFlag, 
     faLink, 
-    faLock 
+    faLock, 
+    faUserCheck
 } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames/bind';
 import styles from './Profile.module.scss';
@@ -33,6 +34,7 @@ import {
 } from '../../components/Icons';
 import Menu from '../../components/Menu';
 import GoToTopBtn from '../../components/GoToTopBtn';
+import Tippy from '@tippyjs/react';
 
 const cx = classNames.bind(styles);
 
@@ -130,6 +132,7 @@ function Profile() {
     const match = useMatch('/:nickname');
     const [data, setData] = useState({});
     const [firstTab, setFirstTab] = useState(true);
+    const [isFollowed, setIsFollowed] = useState(false);
 
     useEffect(() => {
         profileService
@@ -142,6 +145,10 @@ function Profile() {
         console.log(menuItem);
     }
 
+    const handleFollow = () => {
+        setIsFollowed(!isFollowed);
+    }
+
     const handleActiveFirstTab = () => {
         setFirstTab(true);
     }
@@ -152,143 +159,149 @@ function Profile() {
 
     return ( 
         <div className={cx('wrapper')}>
-            
-                <div className={cx('container')}>
-                    <div className={cx('header')}>
-                        <div className={cx('info-wrapper')}>
-                            <div className={cx('user-info')}>
-                                <Image className={cx('avatar')} src={data.avatar} />
-                                <div className={cx('info')}>
-                                    <h1 className={cx('nickname')}>
-                                        {data.nickname}
-                                        {data.tick && <FontAwesomeIcon className={cx('tick')} icon={faCheckCircle} />}
-                                    </h1>
-                                    <h2 className={cx('name')}>{`${data.first_name} ${data.last_name}`}</h2>
-                                    <div className={cx('follow-btn')}>
-                                        <Button primary>Follow</Button>
-                                    </div>
-                                </div>
-                            </div>
-    
-                            <h3 className={cx('count-info-wrapper')}>
-                                <div className={cx('count-info')}>
-                                    <strong className={cx('count-number')}>{data.followings_count}</strong>
-                                    <span className={cx('count-unit')}>Following</span>
-                                </div>
-                                <div className={cx('count-info')}>
-                                    <strong className={cx('count-number')}>{data.followers_count}</strong>
-                                    <span className={cx('count-unit')}>Followers</span>
-                                </div>
-                                <div className={cx('count-info')}>
-                                    <strong className={cx('count-number')}>{data.likes_count}</strong>
-                                    <span className={cx('count-unit')}>Likes</span>
-                                </div>
-                            </h3>
-    
-                            <h2 className={cx('bio')}>{data.bio}</h2>
-    
-                            <div>
-                                {(data.facebook_url || data.youtube_url || data.twitter_url || data.instagram_url) &&
-                                    <Button href={data.youtube_url} text className={cx('shared-link')}>
-                                        <FontAwesomeIcon icon={faLink} className={cx('shared-link-icon')} />
-                                        {(data.facebook_url || data.youtube_url || data.twitter_url || data.instagram_url)}
-                                    </Button>
-                                }
-                            </div>
-                        </div>
+            <div className={cx('header')}>
+                <div className={cx('info-wrapper')}>
+                    <div className={cx('user-info')}>
+                        <Image className={cx('avatar')} src={data.avatar} />
+                        <div className={cx('info')}>
+                            <h1 className={cx('nickname')}>
+                                {data.nickname}
+                                {data.tick && <FontAwesomeIcon className={cx('tick')} icon={faCheckCircle} />}
+                            </h1>
+                            <h2 className={cx('name')}>{`${data.first_name} ${data.last_name}`}</h2>
 
-                        <div className={cx('header-btn-wrapper')}>
-                            <Menu
-                                className={cx('profile-menu-list-1')}
-                                items={MENU_ITEMS}
-                                placement='bottom-end'
-                                offset={[22, 8]}
-                                onChange={handleChange}
-                                menuPopper={cx('share-menu-popper')}
-                            >
-                                <button className={cx('header-btn')}>
-                                    <ProfileShareIcon />
-                                </button>
-                            </Menu>
-                            
-                            <Menu
-                                className={cx('profile-menu-list-2')}
-                                items={MORE_MENU_ITEMS}
-                                placement='bottom-end'
-                                offset={[22, 8]}
-                                onChange={handleChange}
-                                menuPopper={cx('share-menu-popper')}
-                            >
-                                <button className={cx('header-btn')}>
-                                    <FontAwesomeIcon className={cx('header-btn-icon')} icon={faEllipsis} />
-                                </button>
-                            </Menu>
+                            {!isFollowed &&
+                                <Button 
+                                    className={cx('follow-btn')} 
+                                    primary
+                                    onClick={handleFollow}
+                                >
+                                    Follow
+                                </Button>
+                            }
+                            {isFollowed &&
+                                <div className={cx('message-btn-wrapper')}>
+                                    <Button
+                                        className={cx('message-btn')}
+                                        outline
+                                    >
+                                        Messages
+                                    </Button>
+                                    <Tippy content='Unfollow' placement='bottom'>
+                                        <button
+                                            className={cx('unfollow-btn')}
+                                            onClick={handleFollow}
+                                        >
+                                            <FontAwesomeIcon className={cx('unfollow-icon')} icon={faUserCheck} />
+                                        </button>
+                                    </Tippy>
+                                </div>
+                            }
                         </div>
                     </div>
-        
-                    <div className={cx('body')}>
-                        <div className={cx('video-feed-tab')}>
-                            <Button 
-                                className={cx('video-feed-tab-btn', {
-                                    active: firstTab,
-                                })}
-                                onClick={handleActiveFirstTab}
-                            >
-                                Videos
-                            </Button>
-                            <Button 
-                                className={cx('video-feed-tab-btn', 'disable', {
-                                    active: !firstTab,
-                                })}
-                                onClick={handleActiveSecondTab}
-                            >
-                                <FontAwesomeIcon className={cx('disable-icon')} icon={faLock} />
-                                Liked
-                            </Button>
-                            <div className={cx('video-feed-tab-line')}></div>
+
+                    <h3 className={cx('count-info-wrapper')}>
+                        <div className={cx('count-info')}>
+                            <strong className={cx('count-number')}>{data.followings_count}</strong>
+                            <span className={cx('count-unit')}>Following</span>
                         </div>
-    
-                        <div className={cx('video-container')}>
-                            <div className={cx('video-list', {
-                                active: firstTab,
-                            })}>
-                                <div className={cx()}> Pane 1
-                                    {/* {!!data.videos && data.videos.map(video => (
-                                        <video className={cx('video-item')} poster={video.thumb_url} controls>
-                                            <source src={video.file_url} type={video.meta.mime_type} />
-                                        </video>
-                                    ))}
-                                    {!!data.videos && data.videos.map(video => (
-                                        <video className={cx('video-item')} poster={video.thumb_url} controls>
-                                            <source src={video.file_url} type={video.meta.mime_type} />
-                                        </video>
-                                    ))}
-                                    {!!data.videos && data.videos.map(video => (
-                                        <video className={cx('video-item')} poster={video.thumb_url} controls>
-                                            <source src={video.file_url} type={video.meta.mime_type} />
-                                        </video>
-                                    ))}
-                                    {!!data.videos && data.videos.map(video => (
-                                        <video className={cx('video-item')} poster={video.thumb_url} controls>
-                                            <source src={video.file_url} type={video.meta.mime_type} />
-                                        </video>
-                                    ))}
-                                    {!!data.videos && data.videos.map(video => (
-                                        <video className={cx('video-item')} poster={video.thumb_url} controls>
-                                            <source src={video.file_url} type={video.meta.mime_type} />
-                                        </video>
-                                    ))} */}
+                        <div className={cx('count-info')}>
+                            <strong className={cx('count-number')}>{data.followers_count}</strong>
+                            <span className={cx('count-unit')}>Followers</span>
+                        </div>
+                        <div className={cx('count-info')}>
+                            <strong className={cx('count-number')}>{data.likes_count}</strong>
+                            <span className={cx('count-unit')}>Likes</span>
+                        </div>
+                    </h3>
+
+                    <h2 className={cx('bio')}>{data.bio}</h2>
+
+                    <div>
+                        {(data.facebook_url || data.youtube_url || data.twitter_url || data.instagram_url) &&
+                            <Button href={data.youtube_url} text className={cx('shared-link')}>
+                                <FontAwesomeIcon icon={faLink} className={cx('shared-link-icon')} />
+                                {(data.facebook_url || data.youtube_url || data.twitter_url || data.instagram_url)}
+                            </Button>
+                        }
+                    </div>
+                </div>
+
+                <div className={cx('header-btn-wrapper')}>
+                    <Menu
+                        className={cx('profile-menu-list-1')}
+                        items={MENU_ITEMS}
+                        placement='bottom-end'
+                        offset={[22, 8]}
+                        onChange={handleChange}
+                        menuPopper={cx('share-menu-popper')}
+                    >
+                        <button className={cx('header-btn')}>
+                            <ProfileShareIcon />
+                        </button>
+                    </Menu>
+                    
+                    <Menu
+                        className={cx('profile-menu-list-2')}
+                        items={MORE_MENU_ITEMS}
+                        placement='bottom-end'
+                        offset={[22, 8]}
+                        onChange={handleChange}
+                        menuPopper={cx('share-menu-popper')}
+                    >
+                        <button className={cx('header-btn')}>
+                            <FontAwesomeIcon className={cx('header-btn-icon')} icon={faEllipsis} />
+                        </button>
+                    </Menu>
+                </div>
+            </div>
+
+            <div className={cx('body')}>
+                <div className={cx('video-feed-tab')}>
+                    <Button 
+                        className={cx('video-feed-tab-btn', {
+                            active: firstTab,
+                        })}
+                        onClick={handleActiveFirstTab}
+                    >
+                        Videos
+                    </Button>
+                    <Button 
+                        className={cx('video-feed-tab-btn', 'disable', {
+                            active: !firstTab,
+                        })}
+                        onClick={handleActiveSecondTab}
+                    >
+                        <FontAwesomeIcon className={cx('disable-icon')} icon={faLock} />
+                        Liked
+                    </Button>
+                    <div className={cx('video-feed-tab-line')}></div>
+                </div>
+
+                <div className={cx('grid', 'video-container')}>
+                    <div className={cx('grid__row', 'video-list', {
+                        active: firstTab,
+                    })}>
+                        {!!data.videos && data.videos.map(video => (
+                            <div className={cx('grid__column-5')} key={video.id}>
+                                <div className={cx('video-item')}>
+                                    <video className={cx('video')} poster={video.thumb_url} controls>
+                                        <source src={video.file_url} type={video.meta.mime_type} />
+                                    </video>
+                                    <img className={cx('video-thumb')} src={video.thumb_url} alt={video.description} />
+                                    <h4 className={cx('video-description')}>{video.description}</h4>
                                 </div>
                             </div>
-                            <div className={cx('video-list', {
-                                active: !firstTab
-                            })}>
-                                Pane 2
-                            </div>
-                        </div>
-                    </div>   
-                </div> 
-            
+                        ))}
+                    </div>
+                    
+                    <div className={cx('video-list', {
+                        active: !firstTab
+                    })}>
+                        Pane 2
+                    </div>
+                </div>
+            </div>
             <GoToTopBtn />
         </div>
     );

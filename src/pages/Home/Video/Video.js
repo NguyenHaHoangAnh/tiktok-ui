@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Image from '../../../components/Image';
 import classNames from 'classnames/bind';
@@ -110,6 +111,7 @@ const MENU_ITEMS = [
 ];
 
 function Video({ data }) {
+    const [isFollowed, setIsFollowed] = useState(false);
     const renderPreview = (props) => {
         return (
             <div tabIndex='-1' {...props}>
@@ -125,6 +127,10 @@ function Video({ data }) {
     // Handle logic
     const handleChange = (menuItem) => {
         console.log(menuItem);
+    }
+
+    const handleFollow = () => {
+        setIsFollowed(!isFollowed);
     }
 
     return (
@@ -178,7 +184,27 @@ function Video({ data }) {
                         <div className={cx('music')}>{data.music}</div>
                     </div>
 
-                    <Button className={cx('follow-btn')} outline small>Follow</Button>
+                    {!isFollowed &&
+                        <Button 
+                            className={cx('follow-btn')} 
+                            outline 
+                            small
+                            onClick={handleFollow}
+                        >
+                            Follow
+                        </Button>
+                    }
+
+                    {isFollowed &&
+                        <Button 
+                            className={cx('follow-btn')} 
+                            secondary 
+                            small
+                            onClick={handleFollow}
+                        >
+                            Following
+                        </Button>
+                    }
                 </div>
 
                 <div className={cx('body')}>

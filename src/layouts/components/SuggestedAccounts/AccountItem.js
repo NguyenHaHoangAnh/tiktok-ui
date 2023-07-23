@@ -8,6 +8,7 @@ import { Wrapper as PopperWrapper } from '../../../components/Popper';
 import AccountPreview from './AccountPreview';
 import styles from './SuggestedAccounts.module.scss';
 import Image from '../../../components/Image';
+import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
@@ -35,20 +36,22 @@ function AccountItem({ data }) {
                 placement='bottom'
                 render={renderPreview}
             >
-                <div className={cx('account-item')}>
-                    <Image 
-                        className={cx('avatar')}
-                        src={data.avatar}
-                        alt={data.nickname}
-                    />
-                    <div className={cx('user-info')}>
-                        <h4 className={cx('nickname')}>
-                            <strong>{data.nickname}</strong>
-                            {data.tick && <FontAwesomeIcon className={cx('check')} icon={faCheckCircle} />}
-                        </h4>
-                        <p className={cx('name')}>{`${data.first_name} ${data.last_name}`}</p>
+                <Link to={`/@${data.nickname}`}>
+                    <div className={cx('account-item')}>
+                        <Image 
+                            className={cx('avatar')}
+                            src={data.avatar}
+                            alt={data.nickname}
+                        />
+                        <div className={cx('user-info')}>
+                            <h4 className={cx('nickname')}>
+                                <strong>{data.nickname}</strong>
+                                {data.tick && <FontAwesomeIcon className={cx('check')} icon={faCheckCircle} />}
+                            </h4>
+                            <p className={cx('name')}>{`${data.first_name} ${data.last_name}`}</p>
+                        </div>
                     </div>
-                </div>
+                </Link>
             </Tippy>
         </div>
     );
