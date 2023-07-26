@@ -18,6 +18,7 @@
     height: 44px;
     border-radius: 50%;
     object-fit: cover;
+    cursor: pointer;
 }
 
 .follow-btn {
@@ -27,6 +28,7 @@
 .nickname {
     font-size: 1.8rem;
     color: #161823;
+    cursor: pointer;
 }
 
 .check {
@@ -38,6 +40,7 @@
 .name {
     font-size: 1.4rem;
     color: rgba(22, 24, 35, 0.75);
+    cursor: pointer;
 }
 
 .analytics {

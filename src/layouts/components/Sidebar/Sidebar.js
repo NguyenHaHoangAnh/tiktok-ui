@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
 import styles from './Sidebar.module.scss';
 import Menu, { MenuItem } from './Menu';
@@ -14,7 +15,6 @@ import SuggestedAccounts from '../SuggestedAccounts';
 import * as userService from '../../../services/userService';
 import * as followingService from '../../../services/followingService';
 import config from '../../../config';
-import { faL } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classNames.bind(styles);
 
@@ -66,7 +66,7 @@ function Sidebar() {
     };
 
     return ( 
-        <aside className={cx('wrapper')}>
+        <div className={cx('wrapper')}>
             <Menu>
                 <MenuItem title='For You' to={config.routes.home} icon={<HomeIcon />} activeIcon={<HomeActiveIcon />} />
                 <MenuItem title='Following' to={config.routes.following} icon={<UserGroupIcon />} activeIcon={<UserGroupActiveIcon />} />
@@ -85,7 +85,7 @@ function Sidebar() {
                 // data={followingUsers}
                 onViewChange={handleSeeAll}
             />
-        </aside>
+        </div>
     );
 }
 

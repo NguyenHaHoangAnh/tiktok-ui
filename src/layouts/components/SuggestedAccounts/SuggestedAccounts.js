@@ -12,9 +12,7 @@ function SuggestedAccounts({ label, data = [], isSeeAll = false, onViewChange })
             <p className={cx('label')}>{label}</p>
 
             {data.map(account => (
-                <Link to={`/@${account.nickname}`}>
-                    <AccountItem key={account.id} data={account} />
-                </Link>
+                <AccountItem key={account.id} data={account} />
             ))}
 
             <p className={cx('more-btn')} onClick={() => onViewChange(isSeeAll)}>

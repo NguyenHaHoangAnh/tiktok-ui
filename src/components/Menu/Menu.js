@@ -74,18 +74,20 @@ function Menu({
     }
 
     return (
-        <Tippy
-            interactive
-            zIndex={2}
-            placement={placement}
-            offset={offset}
-            popperOptions={{ modifiers: [{ name: 'flip', enabled: false }] }}
-            hideOnClick={hideOnClick}
-            render={renderResult}
-            onHide={handleReset}
-        >
-            {children}
-        </Tippy>
+        <div>
+            <Tippy
+                interactive
+                zIndex={2}
+                placement={placement}
+                offset={offset}
+                popperOptions={{ modifiers: [{ name: 'flip', enabled: false }] }}
+                hideOnClick={hideOnClick}
+                render={renderResult}
+                onHide={handleReset}
+            >
+                {children}
+            </Tippy>
+        </div>
     );
 }
 

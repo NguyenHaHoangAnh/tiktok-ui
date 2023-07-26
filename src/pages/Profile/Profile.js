@@ -285,9 +285,12 @@ function Profile() {
                         {!!data.videos && data.videos.map(video => (
                             <div className={cx('grid__column-5')} key={video.id}>
                                 <div className={cx('video-item')}>
-                                    <video className={cx('video')} poster={video.thumb_url} controls>
-                                        <source src={video.file_url} type={video.meta.mime_type} />
-                                    </video>
+                                    <video 
+                                        className={cx('video')} 
+                                        poster={video.thumb_url} 
+                                        src={video.file_url}
+                                        controls
+                                    />
                                     <img className={cx('video-thumb')} src={video.thumb_url} alt={video.description} />
                                     <h4 className={cx('video-description')}>{video.description}</h4>
                                 </div>

@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
-import { useState } from 'react';
+import { useState, forwardRef, useRef, useImperativeHandle, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle, faPause, faPlay, faVolumeLow } from '@fortawesome/free-solid-svg-icons';
+import Tippy from '@tippyjs/react/headless';
 import Image from '../../../components/Image';
 import classNames from 'classnames/bind';
-import styles from './Video.module.scss';
+import styles from '../Home.module.scss';
 import Button from '../../../components/Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import Tippy from '@tippyjs/react/headless';
 import { Wrapper as PopperWrapper } from '../../../components/Popper';
 import AccountPreview from '../AccountPreview';
 import {
@@ -29,7 +29,7 @@ import {
     LineIcon,
     PinterestIcon,
 } from '../../../components/Icons';
-import VideoAction from './VideoAction';
+import VideoAction from '../VideoAction';
 import Menu from '../../../components/Menu';
 
 const cx = classNames.bind(styles);
@@ -110,8 +110,10 @@ const MENU_ITEMS = [
     },
 ];
 
-function Video({ data }) {
+const Video = forwardRef(({ data, initVolume, children }, ref) => {
     const [isFollowed, setIsFollowed] = useState(false);
+    const [isPlayed, setIsPlayed] = useState(false);
+
     const renderPreview = (props) => {
         return (
             <div tabIndex='-1' {...props}>
@@ -131,6 +133,34 @@ function Video({ data }) {
 
     const handleFollow = () => {
         setIsFollowed(!isFollowed);
+    }
+
+    const videoRef = useRef();
+
+    useEffect(() => {
+        videoRef.current.volume = initVolume / 100;
+    }, []);
+
+    useImperativeHandle(ref, () => ({
+        play() {
+            videoRef.current.play();
+        },
+        pause() {
+            videoRef.current.pause();
+        },
+        volume(value) {
+            videoRef.current.volume = value / 100;
+        }
+    }));
+
+    const handleVideoControl = () => {
+        if (!isPlayed) {
+            setIsPlayed(!isPlayed);
+            videoRef.current.play();
+        } else {
+            setIsPlayed(!isPlayed);
+            videoRef.current.pause();
+        }
     }
 
     return (
@@ -208,9 +238,25 @@ function Video({ data }) {
                 </div>
 
                 <div className={cx('body')}>
-                    <video className={cx('video')} poster={data.thumb_url} controls>
-                        <source src={data.file_url} type={data.meta.mime_type} />
-                    </video>
+                    <video 
+                        ref={videoRef}
+                        className={cx('video')}  
+                        poster={data.thumb_url} 
+                        src={data.file_url}
+                        onClick={handleVideoControl}
+                    />
+
+                    {!isPlayed &&
+                        <button className={cx('control-btn')} onClick={handleVideoControl}>
+                            <FontAwesomeIcon className={cx('control-icon')} icon={faPlay} />
+                        </button>
+                    }
+                    {isPlayed &&
+                        <button className={cx('control-btn')} onClick={handleVideoControl}>
+                            <FontAwesomeIcon className={cx('control-icon')} icon={faPause} />
+                        </button>
+                    }
+                    {children}
 
                     <div className={cx('action')}>
                         <VideoAction className={cx('action-btn', 'like-btn')} icon={<LikeIcon />} data={data.likes_count} />
@@ -231,6 +277,6 @@ function Video({ data }) {
             </div>
         </div>
     );
-}
+});
 
 export default Video;
