@@ -9,6 +9,7 @@ import {
     faFlag, 
     faLink, 
     faLock, 
+    faPlay, 
     faUserCheck
 } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames/bind';
@@ -133,6 +134,7 @@ function Profile() {
     const [data, setData] = useState({});
     const [firstTab, setFirstTab] = useState(true);
     const [isFollowed, setIsFollowed] = useState(false);
+    const [currentPlaying, setCurrentPlaying] = useState({});
 
     useEffect(() => {
         profileService
@@ -151,10 +153,45 @@ function Profile() {
 
     const handleActiveFirstTab = () => {
         setFirstTab(true);
+        handleStopVideo(currentPlaying);
     }
 
     const handleActiveSecondTab = () => {
         setFirstTab(false);
+        handleStopVideo(currentPlaying);
+    }
+
+    const handlePlayVideo = (target) => {
+        const video = target.children[0];
+        const img = target.children[1]; 
+        
+        if (currentPlaying.video === undefined) {
+            setCurrentPlaying({video, img});
+            video.classList.add(cx('active'));
+            img.classList.remove(cx('active'));
+            video.play();
+        } else {
+            if (video !== currentPlaying.video) {
+                handleStopVideo(currentPlaying);
+                video.classList.add(cx('active'));
+                img.classList.remove(cx('active'));
+                setCurrentPlaying({video, img});
+                video.play();
+            } else {
+                video.classList.add(cx('active'));
+                img.classList.remove(cx('active'));
+                video.play();
+            }
+        }
+    }
+
+    const handleStopVideo = (target) => {
+        if (target.video !== undefined) {
+            target.video.classList.remove(cx('active'));
+            target.img.classList.add(cx('active'));
+            target.video.pause();
+            target.video.currentTime = '0';
+        } else return;
     }
 
     return ( 
@@ -284,14 +321,25 @@ function Profile() {
                     })}>
                         {!!data.videos && data.videos.map(video => (
                             <div className={cx('grid__column-5')} key={video.id}>
-                                <div className={cx('video-item')}>
+                                <div 
+                                    className={cx('video-item')}
+                                    onMouseOver={(e) => handlePlayVideo(e.currentTarget)}
+                                    onMouseOut={(e) => handlePlayVideo(e.currentTarget)}
+                                >
                                     <video 
                                         className={cx('video')} 
                                         poster={video.thumb_url} 
                                         src={video.file_url}
-                                        controls
+                                        loop
+                                        muted
                                     />
-                                    <img className={cx('video-thumb')} src={video.thumb_url} alt={video.description} />
+                                    <img className={cx('video-thumb', 'active')} 
+                                        src={video.thumb_url} alt={video.description} 
+                                    />
+                                    <div className={cx('video-info')}>
+                                        <FontAwesomeIcon className={cx('video-icon')} icon={faPlay} />
+                                        <span className={cx('video-view')}>{`${video.views_count}`}</span>
+                                    </div>
                                     <h4 className={cx('video-description')}>{video.description}</h4>
                                 </div>
                             </div>

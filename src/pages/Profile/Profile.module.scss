@@ -23,17 +23,9 @@
     margin: 20px 0 20px 52px;
 }
 
-.container {
-    
-}
-
 .header {
     position: relative;
     margin-bottom: 20px;
-}
-
-.info-wrapper {
-
 }
 
 .user-info {
@@ -172,10 +164,7 @@
 }
 
 // Body
-.body {
-    
-}
-
+// Video tab
 .video-feed-tab {
     position: relative;
     display: flex;
@@ -261,10 +250,7 @@
     background-color: var(--text-color);
 }
 
-.video-container {
-
-}
-
+// Video
 .video-list {
     display: none;
     padding-top: 8px;
@@ -278,14 +264,6 @@
     position: relative;
     height: 226px;
     cursor: pointer;
-
-    &:hover .video-thumb{
-        display: none;
-    }
-
-    &:hover .video {
-        display: flex;
-    }
 }
 
 .video,
@@ -295,11 +273,31 @@
     height: 200px;
     border-radius: 4px;
     object-fit: cover;
+    display: none;
+    
+    &.active {
+        display: flex;
+    }
 }
 
-.video {
-    display: none;
+.video-info {
+    position: absolute;
+    bottom: 40px;
+    left: 12px;
 }
+
+.video-icon {
+    width: 18px;
+    height: 18px;
+    color: var(--white);
+}
+
+.video-view {
+    margin-left: 2px;
+    font-size: 16px;
+    color: var(--white);
+}
+
 
 .video-description {
     position: absolute;
