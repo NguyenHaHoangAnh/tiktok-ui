@@ -1,15 +1,15 @@
 import PropTypes from 'prop-types';
-import { useState, forwardRef, useRef, useImperativeHandle, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faPause, faPlay, faVolumeLow } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faPause, faPlay, faVolumeLow, faVolumeXmark } from '@fortawesome/free-solid-svg-icons';
 import Tippy from '@tippyjs/react/headless';
-import Image from '../../../components/Image';
+import Image from '../Image';
 import classNames from 'classnames/bind';
-import styles from '../Home.module.scss';
-import Button from '../../../components/Button';
-import { Wrapper as PopperWrapper } from '../../../components/Popper';
-import AccountPreview from '../AccountPreview';
+import styles from './Video.module.scss';
+import Button from '../Button';
+import { Wrapper as PopperWrapper } from '../Popper';
+import AccountPreview from './AccountPreview';
 import {
     ArrowDownIcon,
     CollectIcon,
@@ -28,9 +28,9 @@ import {
     EmailIcon,
     LineIcon,
     PinterestIcon,
-} from '../../../components/Icons';
-import VideoAction from '../VideoAction';
-import Menu from '../../../components/Menu';
+} from '../Icons';
+import VideoAction from './VideoAction';
+import Menu from '../Menu';
 
 const cx = classNames.bind(styles);
 
@@ -110,9 +110,10 @@ const MENU_ITEMS = [
     },
 ];
 
-const Video = forwardRef(({ data, initVolume, children }, ref) => {
+const Video = ({ data, mute, volume, toggleMute, adjustVolume }) => {
     const [isFollowed, setIsFollowed] = useState(false);
     const [isPlayed, setIsPlayed] = useState(false);
+    const [pausePressed, setPausePressed] = useState(false);
 
     const renderPreview = (props) => {
         return (
@@ -136,32 +137,72 @@ const Video = forwardRef(({ data, initVolume, children }, ref) => {
     }
 
     const videoRef = useRef();
+    const imgRef = useRef();
 
+    // Mute
     useEffect(() => {
-        videoRef.current.volume = initVolume / 100;
-    }, []);
-
-    useImperativeHandle(ref, () => ({
-        play() {
-            videoRef.current.play();
-        },
-        pause() {
-            videoRef.current.pause();
-        },
-        volume(value) {
-            videoRef.current.volume = value / 100;
+        if (mute) videoRef.current.volume = 0;
+        else {
+            videoRef.current.muted = false;
+            videoRef.current.volume = volume;
         }
-    }));
+    }, [volume]);
 
-    const handleVideoControl = () => {
+    //  Play / Pause / Stop video
+    const playVideo = () => {
+        setIsPlayed(true);
+        imgRef.current.classList.remove(cx('active'));
+        videoRef.current.play();
+    }
+
+    const pauseVideo = () => {
+        setIsPlayed(false);
+        videoRef.current.pause();
+    }
+
+    const stopVideo = () => {
+        setIsPlayed(false);
+        imgRef.current.classList.add(cx('active'));
+        videoRef.current.currentTime = '0';
+        videoRef.current.pause();
+    }
+
+    const handleTogglePlay = () => {
         if (!isPlayed) {
-            setIsPlayed(!isPlayed);
-            videoRef.current.play();
-        } else {
-            setIsPlayed(!isPlayed);
-            videoRef.current.pause();
+            setPausePressed(false);
+            playVideo();
+        }
+        else {
+            setPausePressed(true);
+            pauseVideo();
         }
     }
+
+    // Auto play video
+    useEffect(() => {
+        const windowHeight = window.innerHeight;
+        
+        const handleScroll = () => {
+            const video = videoRef.current;
+            const videoHeight = video.clientHeight;
+            const videoTop = video.getBoundingClientRect().top;
+
+            if (videoTop <= windowHeight - videoHeight * 0.8 && 
+                videoTop >= 60 - videoHeight * 0.75 && 
+                !pausePressed)
+                playVideo();
+            else {
+                if (pausePressed) pauseVideo();
+                else stopVideo();
+            }
+        }
+
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        }
+    });
 
     return (
         <div className={cx('container')} key={data.id}>
@@ -203,7 +244,9 @@ const Video = forwardRef(({ data, initVolume, children }, ref) => {
                                         <h3 className={cx('nickname')}>
                                             <strong>{data.user.nickname}</strong>
                                         </h3>
-                                        {data.user.tick && <FontAwesomeIcon className={cx('tick')} icon={faCheckCircle} />}
+                                        {data.user.tick && 
+                                            <FontAwesomeIcon className={cx('tick')} icon={faCheckCircle} />
+                                        }
                                         <h4 className={cx('name')}>{`${data.user.first_name} ${data.user.last_name}`}</h4>
                                     </div>
                                 </Link>
@@ -238,30 +281,57 @@ const Video = forwardRef(({ data, initVolume, children }, ref) => {
                 </div>
 
                 <div className={cx('body')}>
-                    <video 
-                        ref={videoRef}
-                        className={cx('video')}  
-                        poster={data.thumb_url} 
-                        src={data.file_url}
-                        onClick={handleVideoControl}
-                    />
+                    <div 
+                        className={cx('video-item')} 
+                        onClick={handleTogglePlay}
+                    >
+                        <video 
+                            ref={videoRef} 
+                            className={cx('video')}  
+                            poster={data.thumb_url} 
+                            src={data.file_url}
+                            loop
+                            muted
+                        />
+                        <img 
+                            ref={imgRef}
+                            className={cx('video-thumb', 'active')}
+                            src={data.thumb_url}
+                            alt={data.description}
+                        />
+                    </div>
 
-                    {!isPlayed &&
-                        <button className={cx('control-btn')} onClick={handleVideoControl}>
-                            <FontAwesomeIcon className={cx('control-icon')} icon={faPlay} />
-                        </button>
-                    }
-                    {isPlayed &&
-                        <button className={cx('control-btn')} onClick={handleVideoControl}>
-                            <FontAwesomeIcon className={cx('control-icon')} icon={faPause} />
-                        </button>
-                    }
-                    {children}
+                    <button className={cx('control-btn')} onClick={handleTogglePlay}>
+                        <FontAwesomeIcon className={cx('control-icon')} icon={isPlayed ? faPause : faPlay} />
+                    </button>
+                    
+                    <div className={cx('volume-wrapper')}>
+                            <div className={cx('volume-range-wrapper')}>
+                                <input 
+                                    className={cx('volume-range')}
+                                    value={volume * 100} 
+                                    type='range' 
+                                    min='0' 
+                                    max='100' 
+                                    step='2'
+                                    onInput={adjustVolume}
+                                    style={{
+                                        backgroundSize: `${volume * 100}% 100%`,
+                                    }}
+                                />
+                            </div>
+                            <button className={cx('volume-btn')} onClick={toggleMute}>
+                                <FontAwesomeIcon 
+                                    className={cx('volume-icon')} 
+                                    icon={(volume * 100 > 1 && !mute) ? (faVolumeLow) : (faVolumeXmark)}
+                                />
+                            </button>
+                        </div>
 
                     <div className={cx('action')}>
-                        <VideoAction className={cx('action-btn', 'like-btn')} icon={<LikeIcon />} data={data.likes_count} />
-                        <VideoAction className={cx('action-btn')} icon={<CommentIcon />} data={data.comments_count} />
-                        <VideoAction className={cx('action-btn', 'collect-btn')} icon={<CollectIcon />} data={data.views_count} />
+                        <VideoAction className={cx('action-btn', 'like-btn')} icon={<LikeIcon />} data={data} number={data.likes_count} />
+                        <VideoAction className={cx('action-btn')} icon={<CommentIcon />} data={data} number={data.comments_count} />
+                        <VideoAction className={cx('action-btn', 'collect-btn')} icon={<CollectIcon />} data={data} number={data.views_count} />
                         <Menu
                             className={cx('home-menu-list')}
                             items={MENU_ITEMS}
@@ -270,13 +340,21 @@ const Video = forwardRef(({ data, initVolume, children }, ref) => {
                             onChange={handleChange}
                             menuPopper={cx('share-menu-popper')}
                         >
-                            <VideoAction className={cx('action-btn')} icon={<ShareIcon />} data={data.shares_count} />
+                            <VideoAction className={cx('action-btn')} icon={<ShareIcon />} data={data} number={data.shares_count} />
                         </Menu>
                     </div>
                 </div>
             </div>
         </div>
     );
-});
+};
+
+Video.propTypes = {
+    data: PropTypes.object.isRequired,
+    mute: PropTypes.bool.isRequired,
+    volume: PropTypes.number.isRequired,
+    toggleMute: PropTypes.func.isRequired,
+    adjustVolume: PropTypes.func.isRequired,
+}
 
 export default Video;

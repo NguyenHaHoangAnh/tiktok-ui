@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { useEffect, useState } from "react";
 import { useMatch } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

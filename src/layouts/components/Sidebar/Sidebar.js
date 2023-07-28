@@ -85,6 +85,33 @@ function Sidebar() {
                 // data={followingUsers}
                 onViewChange={handleSeeAll}
             />
+
+            <div className={cx('footer')}>
+                <div className={cx('info')}>
+                    <a className={cx('link')} href='/'>About</a>
+                    <a className={cx('link')} href='/'>Newsroom</a>
+                    <a className={cx('link')} href='/'>Contact</a>
+                    <a className={cx('link')} href='/'>Careers</a>
+                    <a className={cx('link')} href='/'>ByteDance</a>
+                </div>
+                <div className={cx('info')}>
+                    <a className={cx('link')} href='/'>TikTok for Good</a>
+                    <a className={cx('link')} href='/'>Advertise</a>
+                    <a className={cx('link')} href='/'>Developers</a>
+                    <a className={cx('link')} href='/'>Transparency</a>
+                    <a className={cx('link')} href='/'>TikTok Rewards</a>
+                    <a className={cx('link')} href='/'>TikTok Embeds</a>
+                </div>
+                <div className={cx('info')}>
+                    <a className={cx('link')} href='/'>Help</a>
+                    <a className={cx('link')} href='/'>Safety</a>
+                    <a className={cx('link')} href='/'>Term</a>
+                    <a className={cx('link')} href='/'>Privacy</a>
+                    <a className={cx('link')} href='/'>Creator Portal</a>
+                    <a className={cx('link')} href='/'>Community Guidelines</a>
+                </div>
+                <span className={cx('copyright')}>© 2023 TikTok</span>
+            </div>
         </div>
     );
 }

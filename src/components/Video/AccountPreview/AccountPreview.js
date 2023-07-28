@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 
 import styles from './AccountPreview.module.scss';
-import Button from '../../../components/Button';
-import Image from "../../../components/Image";
+import Button from '../../Button';
+import Image from "../../Image";
 import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
