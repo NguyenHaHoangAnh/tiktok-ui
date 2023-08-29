@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useMatch } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -8,12 +8,10 @@ import {
     faFlag, 
     faLink, 
     faLock, 
-    faPlay, 
     faUserCheck
 } from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames/bind';
 import styles from './Profile.module.scss';
-import * as profileService from '../../services/profileService';
 import Image from '../../components/Image';
 import Button from '../../components/Button';
 import { 
@@ -30,11 +28,15 @@ import {
     EmailIcon,
     LineIcon,
     PinterestIcon,
-    ProfileShareIcon
+    ProfileShareIcon,
+    PlayIcon
 } from '../../components/Icons';
 import Menu from '../../components/Menu';
 import GoToTopBtn from '../../components/GoToTopBtn';
 import Tippy from '@tippyjs/react';
+import { authUserContext } from "../../App";
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import * as userService from '../../services/userService';
 
 const cx = classNames.bind(styles);
 
@@ -135,19 +137,45 @@ function Profile() {
     const [isFollowed, setIsFollowed] = useState(false);
     const [currentPlaying, setCurrentPlaying] = useState({});
 
+    const authUser = useContext(authUserContext);
+    const token = authUser && authUser.meta.token ? authUser.meta.token : '';
+    const userId = authUser && authUser.data.id ? authUser.data.id : '';
+
     useEffect(() => {
-        profileService
-            .getUser({ userNickname: match.params.nickname })
-            .then(data => setData(data))
+        userService
+            .getUser({ userNickname: match.params.nickname, token })
+            .then(data => {
+                setData(data);
+                setIsFollowed(data.is_followed);
+            })
             .catch(error => console.log(error));
-    }, [match]);
+    }, [match, token]);
 
     const handleChange = (menuItem) => {
         console.log(menuItem);
     }
 
+    // Handle follow
     const handleFollow = () => {
-        setIsFollowed(!isFollowed);
+        if (token) {
+            userService
+                .followUser({ id: data.id, token })
+                .then(data => setIsFollowed(data.is_followed))
+                .catch(error => console.log(error));
+        } else {
+            alert('Please login!');
+        }
+    }
+
+    const handleUnfollow = () => {
+        if (token) {
+            userService
+                .unfollowUser({ id: data.id, token })
+                .then(data => setIsFollowed(data.is_followed))
+                .catch(error => console.log(error));
+        } else {
+            alert('Please login!');
+        }
     }
 
     const handleActiveFirstTab = () => {
@@ -206,7 +234,21 @@ function Profile() {
                             </h1>
                             <h2 className={cx('name')}>{`${data.first_name} ${data.last_name}`}</h2>
 
-                            {!isFollowed &&
+                            {(userId === data.id) &&
+                                <Button
+                                    className={cx('edit-btn')}
+                                    secondary
+                                    leftIcon={
+                                        <FontAwesomeIcon 
+                                            className={cx('edit-icon')}
+                                            icon={faPenToSquare}
+                                        />
+                                    }
+                                >
+                                    Edit profile
+                                </Button>
+                            }
+                            {!(userId === data.id) && !isFollowed &&
                                 <Button 
                                     className={cx('follow-btn')} 
                                     primary
@@ -215,7 +257,7 @@ function Profile() {
                                     Follow
                                 </Button>
                             }
-                            {isFollowed &&
+                            {!(userId === data.id) && isFollowed &&
                                 <div className={cx('message-btn-wrapper')}>
                                     <Button
                                         className={cx('message-btn')}
@@ -226,7 +268,7 @@ function Profile() {
                                     <Tippy content='Unfollow' placement='bottom'>
                                         <button
                                             className={cx('unfollow-btn')}
-                                            onClick={handleFollow}
+                                            onClick={handleUnfollow}
                                         >
                                             <FontAwesomeIcon className={cx('unfollow-icon')} icon={faUserCheck} />
                                         </button>
@@ -314,12 +356,12 @@ function Profile() {
                     <div className={cx('video-feed-tab-line')}></div>
                 </div>
 
-                <div className={cx('grid', 'video-container')}>
-                    <div className={cx('grid__row', 'video-list', {
+                <div className={cx('video-container')}>
+                    <div className={cx('video-list', {
                         active: firstTab,
                     })}>
                         {!!data.videos && data.videos.map(video => (
-                            <div className={cx('grid__column-5')} key={video.id}>
+                            <div key={video.id}>
                                 <div 
                                     className={cx('video-item')}
                                     onMouseOver={(e) => handlePlayVideo(e.currentTarget)}
@@ -336,7 +378,7 @@ function Profile() {
                                         src={video.thumb_url} alt={video.description} 
                                     />
                                     <div className={cx('video-info')}>
-                                        <FontAwesomeIcon className={cx('video-icon')} icon={faPlay} />
+                                        <PlayIcon />
                                         <span className={cx('video-view')}>{`${video.views_count}`}</span>
                                     </div>
                                     <h4 className={cx('video-description')}>{video.description}</h4>
@@ -346,9 +388,10 @@ function Profile() {
                     </div>
                     
                     <div className={cx('video-list', {
-                        active: !firstTab
+                        active: !firstTab,
+                        private: true,
                     })}>
-                        Pane 2
+                        This user's liked videos are private
                     </div>
                 </div>
             </div>

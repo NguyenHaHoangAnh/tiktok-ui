@@ -32,8 +32,8 @@ function AccountItem({ data }) {
                 delay={[800, 0]}
                 offset={[-20 ,0]}
                 zIndex={2}
-                popperOptions={{ modifiers: [{ name: 'flip', enabled: false }] }}
-                placement='bottom'
+                popperOptions={{ modifiers: [{ name: 'flip', enabled: false }], strategy: 'fixed', }}
+                placement='bottom-start'
                 render={renderPreview}
             >
                 <Link to={`/@${data.nickname}`}>

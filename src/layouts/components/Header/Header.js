@@ -1,4 +1,5 @@
 import classNames from 'classnames/bind';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
     faEllipsisVertical, 
@@ -23,7 +24,18 @@ import { InboxIcon, MessageIcon, UploadIcon } from '../../../components/Icons';
 import Image from '../../../components/Image';
 import Search from '../Search';
 
+// import { ModalProvider, ModalContext } from '../../../components/Modal/ModalContext';
+import Modal from '../../../components/Modal';
+import Login from '../../../components/Modal/components/Login';
+import Signup from '../../../components/Modal/components/Signup';
+import LoginWithPhoneAndCode from '../../../components/Modal/components/LoginWithPhoneAndCode';
+import LoginWithEmail from '../../../components/Modal/components/LoginWithEmail';
+import LoginWithPhoneAndPassword from '../../../components/Modal/components/LoginWithPhoneAndPassword/LoginWithPhoneAndPassword';
+import { authUserContext } from '../../../App';
+
 const cx = classNames.bind(styles);
+
+export const ModalContext = createContext();
 
 const MENU_ITEMS = [
     {
@@ -127,18 +139,28 @@ const MENU_ITEMS = [
 ];
 
 function Header() {
-    const currentUser = true;
+    const authUser = useContext(authUserContext);
 
     // Handle logic
     const handleMenuChange = (menuItem) => {
-        console.log(menuItem);
+        switch(menuItem.to) {
+            case '/logout':
+                localStorage.removeItem('user');
+                window.location.reload();
+                break;
+            case '/@nickname':
+                window.location.href = `/@${authUser.data.nickname}`;
+                break;
+            default:
+                break;
+        }
     };
 
     const userMenu = [
         {
             icon: <FontAwesomeIcon icon={faUser} />,
             title: 'View profile',
-            to: '/@rose_are_rosie',
+            to: '/@nickname',
         },
         {
             icon: <FontAwesomeIcon icon={faCoins} />,
@@ -157,8 +179,65 @@ function Header() {
             to: '/logout',
             className: 'separate',
         },
-    ]
+    ];
+
+    // Modal
+    const [showModal, setShowModal] = useState(false);
+    const [modalValue, setModalValue] = useState('login');
+    const [children, setChildren] = useState(<Login />)
+    const [prevModalValue, setPrevModalValue] = useState(null);
     
+    // Show / hide modal
+    const handleShowModal = (e) => {
+        e.preventDefault();
+        setShowModal(true);
+    };
+
+    const handleHideModal = () => {
+        setShowModal(false);
+        setModalValue('');
+    };
+
+    // Handle modal
+    const handleModalValue = (value) => {
+        setModalValue(value || 'login');
+    }
+
+    const value = {
+        modalValue,
+        handleModalValue,
+        prevModalValue,
+    };
+
+    useEffect(() => {
+        switch(modalValue) {
+            case 'login':
+                setChildren(<Login />);
+                setPrevModalValue(null);
+                break;
+            case 'signup':
+                setChildren(<Signup />);
+                setPrevModalValue(null);
+                break;
+            case 'login-with-email':
+                setChildren(<LoginWithEmail />);
+                setPrevModalValue('login');
+                break;
+            case 'login-with-phone-and-code':
+                setChildren(<LoginWithPhoneAndCode />);
+                setPrevModalValue('login');
+                break;
+            case 'login-with-phone-and-password':
+                setChildren(<LoginWithPhoneAndPassword />);
+                setPrevModalValue('login');
+                break;
+            default:
+                setChildren(<Login />)
+                break;
+        }
+        // console.log(modalValue);
+    }, [modalValue]);
+
     return ( 
         <header className={cx('wrapper')}>
             <div className={cx('inner')}>
@@ -169,7 +248,7 @@ function Header() {
                 <Search />
 
                 <div className={cx('actions')}>
-                    {currentUser ? (
+                    {authUser ? (
                         <>
                             <Tippy delay={[0, 200]} content='Upload video' placement='bottom'>
                                 <button className={cx('action-btn')}>
@@ -191,23 +270,23 @@ function Header() {
                     ) : (
                         <>
                             <Button text>Upload</Button>
-                            <Button primary>Log in</Button>
+                            <Button primary onClick={(e) => handleShowModal(e)}>Log in</Button>
                         </>
                     )}
 
                     <Menu 
                         className={cx('header-menu-list')}
-                        items={currentUser ? userMenu : MENU_ITEMS} 
+                        items={authUser ? userMenu : MENU_ITEMS} 
                         placement='bottom-end'
                         offset={[12, 8]}
                         onChange={handleMenuChange}
                         menuPopper={cx('header-menu-popper')}
                     >
-                        {currentUser ? (
+                        {authUser ? (
                             <Image 
                                 className={cx('user-avatar')}
-                                src='../../assets/images/no-image.png' 
-                                alt='Rose' 
+                                src={authUser.data.avatar}
+                                alt={authUser.data.nickname}
                             />
                         ) : (
                             <button className={cx('more-btn')}>
@@ -217,6 +296,14 @@ function Header() {
                     </Menu>
                 </div>              
             </div>
+
+            <ModalContext.Provider value={value}>
+                {showModal &&
+                    <Modal onClose={handleHideModal}>
+                        {children}
+                    </Modal>
+                }
+            </ModalContext.Provider>
         </header>
     );
 }

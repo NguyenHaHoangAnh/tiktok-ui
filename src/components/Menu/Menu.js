@@ -80,7 +80,7 @@ function Menu({
                 zIndex={2}
                 placement={placement}
                 offset={offset}
-                popperOptions={{ modifiers: [{ name: 'flip', enabled: false }] }}
+                popperOptions={{ modifiers: [{ name: 'flip', enabled: false }], strategy: 'fixed', }}
                 hideOnClick={hideOnClick}
                 render={renderResult}
                 onHide={handleReset}

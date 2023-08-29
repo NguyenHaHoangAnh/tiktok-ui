@@ -7,10 +7,18 @@ import styles from './AccountPreview.module.scss';
 import Button from '../../Button';
 import Image from "../../Image";
 import { Link } from 'react-router-dom';
+import { useContext } from 'react';
+import { authUserContext } from '../../../App';
+import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 
 const cx = classNames.bind(styles);
 
-function AccountPreview({ data }) {
+function AccountPreview({ data, isFollowed, handleFollow, handleUnfollow }) {
+    // const [isFollowed, setIsFollowed] = useState(data.is_followed);
+
+    const authUser = useContext(authUserContext);
+    const userId = authUser && authUser.data.id ? authUser.data.id : '';
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('header')}>
@@ -21,7 +29,38 @@ function AccountPreview({ data }) {
                         alt={data.nickname}
                     />
                 </Link>
-                <Button className={cx('follow-btn')} primary>Follow</Button>
+                {(userId === data.id) &&
+                    <Button
+                        className={cx('edit-btn')}
+                        secondary
+                        leftIcon={
+                            <FontAwesomeIcon 
+                                className={cx('edit-icon')}
+                                icon={faPenToSquare}
+                            />
+                        }
+                    >
+                        Edit profile
+                    </Button>
+                }
+                {!(userId === data.id) && !isFollowed &&
+                    <Button 
+                        className={cx('follow-btn')} 
+                        primary
+                        onClick={handleFollow}
+                    >
+                        Follow
+                    </Button>
+                }
+                {!(userId === data.id) && isFollowed &&
+                    <Button
+                        className={cx('follow-btn')}
+                        secondary
+                        onClick={handleUnfollow}
+                    >
+                        Following
+                    </Button>
+                }
             </div>
 
             <div className={cx('body')}>

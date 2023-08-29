@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+import { useState, useEffect, useContext } from 'react';
 import classNames from 'classnames/bind';
 import styles from './Sidebar.module.scss';
 import Menu, { MenuItem } from './Menu';
@@ -13,8 +12,8 @@ import {
 } from '../../../components/Icons';
 import SuggestedAccounts from '../SuggestedAccounts';
 import * as userService from '../../../services/userService';
-import * as followingService from '../../../services/followingService';
 import config from '../../../config';
+import { authUserContext } from '../../../App';
 
 const cx = classNames.bind(styles);
 
@@ -22,17 +21,22 @@ const INIT_PAGE = 1;
 const PER_PAGE = 5;
 
 function Sidebar() {
-    const [page, setPage] = useState(INIT_PAGE);
-    const [isSeeAll, setIsSeeAll] = useState(false);
+    const [sPage, setSPage] = useState(INIT_PAGE);
+    const [sPerPage, setSPerPage] = useState(PER_PAGE);
+    const [fPage, setFPage] = useState(INIT_PAGE);
     const [suggestedUsers, setSuggestedUsers] = useState([]);
     const [followingUsers, setFollowingUsers] = useState([]);
 
+    const authUser = useContext(authUserContext);
+    const token = authUser && authUser.meta.token ? authUser.meta.token : '';
+
+    // Get suggested users
     useEffect(() => {
         let isMounted = true;
         const controller = new AbortController();
 
         userService
-            .getSuggested({ page: controller.page, perPage: PER_PAGE })
+            .getSuggested({ page: sPage, perPage: sPerPage})
             .then(data => {
                 isMounted && setSuggestedUsers(prevUser => [...prevUser, ...data]);
             })
@@ -42,28 +46,49 @@ function Sidebar() {
             isMounted = false;
             controller.abort();
         }
-    }, [page]);
+    }, [sPage, sPerPage]);
 
-    // useEffect(() => {
-    //     let isMounted = true;
-    //     const controller = new AbortController();
+    // Get following users
+    useEffect(() => {
+        if (token) {
+            let isMounted = true;
+            const controller = new AbortController();
 
-    //     followingService
-    //         .getFollowing({ page })
-    //         .then(data => {
-    //             isMounted && setFollowingUsers(prevUser => [...prevUser, ...data]);
-    //         })
-    //         .catch(error => console.log(error));
+            userService
+                .getFollowing({ page: fPage, token })
+                .then(data => {
+                    isMounted && setFollowingUsers(prevUser => [...prevUser, ...data]);
+                })
+                .catch(error => console.log(error));
 
-    //     return () => {
-    //         isMounted = false;
-    //         controller.abort();
-    //     }
-    // }, [page]);
+            return () => {
+                isMounted = false;
+                controller.abort();
+            }
+        } else {
+            setFollowingUsers([]);
+        }
+    }, [fPage, token]);
 
-    const handleSeeAll = (isSeeAll) => {
-        setPage(page + 1);
-    };
+    const moreSUser = () => {
+        if (suggestedUsers.length === PER_PAGE) {
+            setSPerPage(PER_PAGE * 4);
+            setSPage(prev => prev + 1);
+        } else {
+            setSuggestedUsers([]);
+            setSPerPage(PER_PAGE);
+            setSPage(INIT_PAGE);
+        }
+    }
+
+    const moreFUser = () => {
+        if (followingUsers.length === PER_PAGE * 6 || followingUsers.length < fPage * PER_PAGE) {
+            setFollowingUsers([]);
+            setFPage(INIT_PAGE);
+        } else {
+            setFPage(prev => prev + 1);
+        }
+    }
 
     return ( 
         <div className={cx('wrapper')}>
@@ -76,14 +101,15 @@ function Sidebar() {
             <SuggestedAccounts 
                 label='Suggested accounts' 
                 data={suggestedUsers} 
-                isSeeAll={isSeeAll}
-                onViewChange={handleSeeAll} 
+                isSeeAll={suggestedUsers.length === PER_PAGE ? 'See all' : 'See less'}
+                onViewChange={moreSUser}
             />
             
             <SuggestedAccounts 
                 label='Following accounts' 
-                // data={followingUsers}
-                onViewChange={handleSeeAll}
+                data={followingUsers}
+                isSeeAll={(followingUsers.length === PER_PAGE * 6 || followingUsers.length < fPage * PER_PAGE) ? 'See less' : 'See more'}
+                onViewChange={moreFUser}
             />
 
             <div className={cx('footer')}>

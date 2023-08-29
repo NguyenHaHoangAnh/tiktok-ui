@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import * as videoService from '../../services/videoService';
 import classNames from 'classnames/bind';
 import styles from './Home.module.scss';
@@ -23,7 +23,7 @@ function Home() {
         const controller = new AbortController();
         
         videoService
-            .getVideo({ type: TYPE, page: controller.page })
+            .getVideo({ type: TYPE, page: page })
             .then(data => {
                 isMounted && setData(prevVideo => [...prevVideo, ...data]);
             })
@@ -38,7 +38,7 @@ function Home() {
     useEffect(() => {
         if (volume === 0) setMute(true);
         if (mute) setVolume(0);
-    }, [volume]);
+    }, [volume, mute]);
 
     const handleToggleMute = () => {
         if (mute) {

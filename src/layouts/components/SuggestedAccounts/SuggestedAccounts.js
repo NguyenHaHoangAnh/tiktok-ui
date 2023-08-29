@@ -2,11 +2,10 @@ import PropTypes from 'prop-types';
 import classNames from "classnames/bind";
 import styles from './SuggestedAccounts.module.scss';
 import AccountItem from './AccountItem';
-import { Link } from 'react-router-dom';
 
 const cx = classNames.bind(styles);
 
-function SuggestedAccounts({ label, data = [], isSeeAll = false, onViewChange }) {
+function SuggestedAccounts({ label, data = [], isSeeAll, onViewChange }) {
     return (
         <div className={cx('wrapper')}>
             <p className={cx('label')}>{label}</p>
@@ -16,7 +15,7 @@ function SuggestedAccounts({ label, data = [], isSeeAll = false, onViewChange })
             ))}
 
             <p className={cx('more-btn')} onClick={() => onViewChange(isSeeAll)}>
-                {isSeeAll ? 'See less' : 'See all'}
+                {isSeeAll}
             </p>
         </div>
     );

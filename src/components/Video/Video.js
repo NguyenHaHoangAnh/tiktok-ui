@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faPause, faPlay, faVolumeLow, faVolumeXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import Tippy from '@tippyjs/react/headless';
 import Image from '../Image';
 import classNames from 'classnames/bind';
@@ -28,9 +28,15 @@ import {
     EmailIcon,
     LineIcon,
     PinterestIcon,
+    PlaySolidIcon,
+    PauseIcon,
+    VolumeIcon,
+    MutedIcon,
 } from '../Icons';
 import VideoAction from './VideoAction';
 import Menu from '../Menu';
+import { authUserContext } from '../../App';
+import * as userService from '../../services/userService';
 
 const cx = classNames.bind(styles);
 
@@ -115,25 +121,35 @@ const Video = ({ data, mute, volume, toggleMute, adjustVolume }) => {
     const [isPlayed, setIsPlayed] = useState(false);
     const [pausePressed, setPausePressed] = useState(false);
 
-    const renderPreview = (props) => {
-        return (
-            <div tabIndex='-1' {...props}>
-                <PopperWrapper>
-                    <div className={cx('preview')}>
-                        <AccountPreview data={data.user} />
-                    </div>
-                </PopperWrapper>
-            </div>
-        );
-    };
+    const authUser = useContext(authUserContext);
+    const token = authUser && authUser.meta.token ? authUser.meta.token : '';
 
     // Handle logic
     const handleChange = (menuItem) => {
         console.log(menuItem);
     }
 
+    // Handle follow
     const handleFollow = () => {
-        setIsFollowed(!isFollowed);
+        if (token) {
+            userService
+                .followUser({ id: data.id, token })
+                .then(data => setIsFollowed(data.is_followed))
+                .catch(error => console.log(error));
+        } else {
+            alert('Please login!');
+        }
+    }
+
+    const handleUnfollow = () => {
+        if (token) {
+            userService
+                .unfollowUser({ id: data.id, token })
+                .then(data => setIsFollowed(data.is_followed))
+                .catch(error => console.log(error));
+        } else {
+            alert('Please login!');
+        }
     }
 
     const videoRef = useRef();
@@ -187,7 +203,7 @@ const Video = ({ data, mute, volume, toggleMute, adjustVolume }) => {
             const videoHeight = video.clientHeight;
             const videoTop = video.getBoundingClientRect().top;
 
-            if (videoTop <= windowHeight - videoHeight * 0.8 && 
+            if (videoTop <= windowHeight - videoHeight * 0.75 && 
                 videoTop >= 60 - videoHeight * 0.75 && 
                 !pausePressed)
                 playVideo();
@@ -204,13 +220,30 @@ const Video = ({ data, mute, volume, toggleMute, adjustVolume }) => {
         }
     });
 
+    const renderPreview = (props) => {
+        return (
+            <div tabIndex='-1' {...props}>
+                <PopperWrapper>
+                    <div className={cx('preview')}>
+                        <AccountPreview
+                            data={data.user}
+                            isFollowed={isFollowed}
+                            handleFollow={handleFollow}
+                            handleUnfollow={handleUnfollow} 
+                        />
+                    </div>
+                </PopperWrapper>
+            </div>
+        );
+    };
+
     return (
         <div className={cx('container')} key={data.id}>
             <div>
                 <Tippy
                     interactive
                     zIndex={2}
-                    popperOptions={{ modifiers: [{ name: 'flip', enabled: false }] }}
+                    popperOptions={{ modifiers: [{ name: 'flip', enabled: false }], strategy: 'fixed', }}
                     delay={[800, 400]}
                     offset={[0, 2]}
                     placement='bottom-start'
@@ -233,7 +266,7 @@ const Video = ({ data, mute, volume, toggleMute, adjustVolume }) => {
                             <Tippy
                                 interactive
                                 zIndex={2}
-                                popperOptions={{ modifiers: [{ name: 'flip', enabled: false }] }}
+                                popperOptions={{ modifiers: [{ name: 'flip', enabled: false }], strategy: 'fixed', }}
                                 delay={[800, 400]}
                                 offset={[-68, 38]}
                                 placement='bottom-start'
@@ -273,7 +306,7 @@ const Video = ({ data, mute, volume, toggleMute, adjustVolume }) => {
                             className={cx('follow-btn')} 
                             secondary 
                             small
-                            onClick={handleFollow}
+                            onClick={handleUnfollow}
                         >
                             Following
                         </Button>
@@ -302,7 +335,7 @@ const Video = ({ data, mute, volume, toggleMute, adjustVolume }) => {
                     </div>
 
                     <button className={cx('control-btn')} onClick={handleTogglePlay}>
-                        <FontAwesomeIcon className={cx('control-icon')} icon={isPlayed ? faPause : faPlay} />
+                        {isPlayed ? (<PlaySolidIcon />) : (<PauseIcon />)}
                     </button>
                     
                     <div className={cx('volume-wrapper')}>
@@ -321,10 +354,7 @@ const Video = ({ data, mute, volume, toggleMute, adjustVolume }) => {
                                 />
                             </div>
                             <button className={cx('volume-btn')} onClick={toggleMute}>
-                                <FontAwesomeIcon 
-                                    className={cx('volume-icon')} 
-                                    icon={(volume * 100 > 1 && !mute) ? (faVolumeLow) : (faVolumeXmark)}
-                                />
+                                {(volume * 100 > 0 && !mute) ? (<VolumeIcon />) : (<MutedIcon />)}
                             </button>
                         </div>
 
