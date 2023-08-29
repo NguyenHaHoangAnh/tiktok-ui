@@ -14,8 +14,6 @@ import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 const cx = classNames.bind(styles);
 
 function AccountPreview({ data, isFollowed, handleFollow, handleUnfollow }) {
-    // const [isFollowed, setIsFollowed] = useState(data.is_followed);
-
     const authUser = useContext(authUserContext);
     const userId = authUser && authUser.data.id ? authUser.data.id : '';
 
@@ -88,6 +86,9 @@ function AccountPreview({ data, isFollowed, handleFollow, handleUnfollow }) {
 
 AccountPreview.propTypes = {
     data: PropTypes.object.isRequired,
+    isFollowed: PropTypes.bool.isRequired,
+    handleFollow: PropTypes.func.isRequired,
+    handleUnfollow: PropTypes.func.isRequired,
 }
 
 export default AccountPreview;
